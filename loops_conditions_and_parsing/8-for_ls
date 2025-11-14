@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+for item in *; do newname="${item#*-}"; echo "$newname"; done
