@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
+# The content of the current directory
 for item in *; do newname="${item#*-}"; echo "$newname"; done
