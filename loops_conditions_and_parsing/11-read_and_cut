@@ -1,4 +1,3 @@
 #!/usr/bin/env bash
-# Bash script that displays the content of the file 
-file="/etc/passwd"
-while IFS=: read -r username _ uid _ _ home _; do echo "$username:$uid:$home"; done < "$file"
+# Bash script that displays the content of the file
+while IFS=: read -r -a f; do echo "${f[0]}:${f[2]}:${f[5]}"; done < /etc/passwd
