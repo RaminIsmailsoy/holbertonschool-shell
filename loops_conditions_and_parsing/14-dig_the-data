@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+log_file="apache-access.log"
+awk '{key=$1" "$9; count[key]++} END {for (k in count) print count[k], k}' "$log_file" | sort -rn
