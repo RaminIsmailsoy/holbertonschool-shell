@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 # Dig the data 
-awk '{ count[$1" "$9]++ } END { for (key in count) { print count[key], key } }' /var/log/apache2/access.log | sort -nr
+awk '{ count[$1" "$9]++ } END { for (key in count) { print count[key], key } }' apache_access.log | sort -nr
