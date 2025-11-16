@@ -1,36 +1,24 @@
 #!/usr/bin/env bash
 # Process and PID file 
-#!/usr/bin/env bash
+echo $$ > /var/run/holbertonscript.pid
 
-# Create the PID file
-PID_FILE="/var/run/myscript.pid"
-echo $$ > "$PID_FILE"
-
-# Define signal handlers
-sigterm_handler() {
+function term {
     echo "I hate the kill command"
+    rm /var/run/holbertonscript.pid
+    exit
 }
-
-sigint_handler() {
+function sint {
     echo "Y U no love me?!"
 }
-
-sigquit_handler() {
-    rm -f "$PID_FILE"
-    exit 0
+function quit {
+    rm /var/run/holbertonscript.pid
+    exit
 }
 
-# SIGTERM → message only
-trap sigterm_handler SIGTERM
+trap term SIGTERM
+trap sint SIGINT
+trap quit SIGQUIT
 
-# SIGINT (Ctrl+C) → special message
-trap sigint_handler SIGINT
-
-# SIGQUIT & SIGTERM → remove file and exit
-trap sigquit_handler SIGQUIT
-trap sigquit_handler SIGTERM
-
-# Infinite loop
 while true
 do
     echo "To infinity and beyond"
