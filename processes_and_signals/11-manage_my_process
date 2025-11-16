@@ -1,38 +1,46 @@
 #!/usr/bin/env bash
-# Manage my process
-#!/usr/bin/env bash
 
-# Create the PID file
-PID_FILE="/var/run/myscript.pid"
-echo $$ > "$PID_FILE"
+PIDFILE="/var/run/my_process.pid"
+PROCESS="./my_process"
 
-# Define signal handlers
-sigterm_handler() {
-    echo "I hate the kill command"
+start() {
+    if [ -f "$PIDFILE" ]; then
+        echo "my_process already running"
+        exit 1
+    fi
+
+    $PROCESS &
+    echo $! > "$PIDFILE"
+    echo "manage_my_process started"
 }
 
-sigint_handler() {
-    echo "Y U no love me?!"
+stop() {
+    if [ ! -f "$PIDFILE" ]; then
+        echo "my_process not running"
+        exit 1
+    fi
+
+    kill "$(cat "$PIDFILE")" 2>/dev/null
+    rm -f "$PIDFILE"
+    echo "manage_my_process stopped"
 }
 
-sigquit_handler() {
-    rm -f "$PID_FILE"
-    exit 0
+restart() {
+    stop 2>/dev/null
+    start
+    echo "manage_my_process restarted"
 }
 
-# SIGTERM → message only
-trap sigterm_handler SIGTERM
+# ----------------------
+# MAIN
+# ----------------------
 
-# SIGINT (Ctrl+C) → special message
-trap sigint_handler SIGINT
-
-# SIGQUIT & SIGTERM → remove file and exit
-trap sigquit_handler SIGQUIT
-trap sigquit_handler SIGTERM
-
-# Infinite loop
-while true
-do
-    echo "To infinity and beyond"
-    sleep 2
-done
+case "$1" in
+    start) start ;;
+    stop) stop ;;
+    restart) restart ;;
+    *)
+        echo "Usage: manage_my_process {start|stop|restart}"
+        exit 1
+        ;;
+esac
