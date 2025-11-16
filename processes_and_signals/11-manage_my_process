@@ -1,11 +1,43 @@
 #!/usr/bin/env bash
-# Task 11
-sudo bash -c "echo $BASHPID > /var/run/holbertonscript.pid"
-while true
-do
-    echo "To infinity and beyond"
-    trap 'echo "I hate the kill command"; sudo bash -c "rm /var/run/holbertonscript.pid"; exit' SIGTERM
-    trap 'echo "Y U no love me?!"' SIGINT
-    trap 'sudo bash -c "rm /var/run/holbertonscript.pid"; exit' SIGQUIT
-    sleep 2
-done
+#init script for `manage_my_process` process
+
+argument="$1";
+
+function start(){
+    ./manage_my_process;
+    "pgrep -f manage_my_process" >> "/var/run/my_process.pid";
+    echo "manage_my_process started";
+}
+
+function stop(){
+    kill -9 "$(pgrep -f manage_my_process )";
+    rm "/var/run/my_process.pid";
+    echo "manage_my_process stopped";
+}
+
+function restart(){
+    kill -9 "$(pgrep -f manage_my_process)";
+    rm "/var/run/my_process.pid";
+    ./manage_my_process;
+    "pgrep -f manage_my_process" >> "/var/run/my_process.pid";
+    echo "manage_my_process restarted";
+}
+
+function usage(){
+    echo "Usage: manage_my_process {start|stop|restart}";
+}
+
+
+if [ -n "$argument" ]; then
+    if [ "$argument" == "start" ]; then 
+        start;
+    elif [ "$argument" == "stop" ]; then 
+        stop;
+    elif [ "$argument" == "restart" ]; then 
+        restart;
+    else
+        usage;
+    fi
+else
+    usage;
+fi
