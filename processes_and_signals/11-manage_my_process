@@ -1,23 +1,38 @@
 #!/usr/bin/env bash
 # Manage my process
-file=/var/run/my_process.pid
-if [ "$1" == "start" ];
-then
-    ./manage_my_process &
-    sudo bash -c "echo $! > $file"
-    echo "manage_my_process started"
-elif [ "$1" == "stop" ];
-then
-    pkill -f ./manage_my_process
-    sudo rm $file
-    echo "manage_my_process stopped"
-elif [ "$1" == "restart" ];
-then
-    pkill -f ./manage_my_process
-    sudo rm $file
-    ./manage_my_process &
-    sudo bash -c "echo $! > $file"
-    echo "manage_my_process restarted"
-else
-    echo "Usage: manage_my_process {start|stop|restart}"
-fi
+#!/usr/bin/env bash
+
+# Create the PID file
+PID_FILE="/var/run/myscript.pid"
+echo $$ > "$PID_FILE"
+
+# Define signal handlers
+sigterm_handler() {
+    echo "I hate the kill command"
+}
+
+sigint_handler() {
+    echo "Y U no love me?!"
+}
+
+sigquit_handler() {
+    rm -f "$PID_FILE"
+    exit 0
+}
+
+# SIGTERM → message only
+trap sigterm_handler SIGTERM
+
+# SIGINT (Ctrl+C) → special message
+trap sigint_handler SIGINT
+
+# SIGQUIT & SIGTERM → remove file and exit
+trap sigquit_handler SIGQUIT
+trap sigquit_handler SIGTERM
+
+# Infinite loop
+while true
+do
+    echo "To infinity and beyond"
+    sleep 2
+done
