@@ -1,26 +1,32 @@
 #!/usr/bin/env bash
 # Process and PID file 
-echo $$ > /var/run/holbertonscript.pid
-
-function term {
-    echo "I hate the kill command"
-    rm /var/run/holbertonscript.pid
-    exit
-}
-function sint {
-    echo "Y U no love me?!"
-}
-function quit {
-    rm /var/run/holbertonscript.pid
-    exit
+start_p() {
+    ./manage_my_process &
+    echo $$ > /var/run/my_process.pid
 }
 
-trap term SIGTERM
-trap sint SIGINT
-trap quit SIGQUIT
+stop_p() {
+    rm /var/run/my_process.pid
+    pkill -of manage_my_process
+}
 
-while true
-do
-    echo "To infinity and beyond"
-    sleep 2
-done
+has_arg_1() {
+    if [ "$CMD" == "start" ]; then
+	start_p
+	echo "manage_my_process started"
+    elif [ "$CMD" == "stop" ]; then
+	stop_p
+	echo "manage_my_process stopped"
+    elif [ "$CMD" == "restart" ]; then
+	stop_p
+	start_p
+	echo "manage_my_process restarted"
+    fi
+}
+
+if [ $# -gt 0 ]; then
+    CMD="$1"
+    has_arg_1
+else
+    echo "Usage: manage_your_process {start|stop|restart}"
+fi
